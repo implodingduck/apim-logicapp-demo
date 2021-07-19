@@ -97,3 +97,12 @@ module "sql" {
   db_password = random_password.password.result
 }
 
+resource "azurerm_api_management" "apim" {
+  name                = "apim-logicapp-demo-tf-api"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  publisher_name      = "implodingduck"
+  publisher_email     = "something@nothing.com"
+
+  sku_name = "Developer_1"
+}
