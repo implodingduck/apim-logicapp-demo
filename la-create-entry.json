@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_la_create_entry_name": {
+            "defaultValue": "la-create-entry",
+            "type": "String"
+        },
+        "connections_sql_externalid": {
+            "defaultValue": "/subscriptions/${subscription_id}/resourceGroups/rg-apim-logicapp-demo-tf/providers/Microsoft.Web/connections/sql",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_la_create_entry_name')]",
+            "location": "eastus",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {
+                                    "properties": {
+                                        "definition": {
+                                            "type": "string"
+                                        },
+                                        "term": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Insert_row_(V2)": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "term": "@triggerBody()?['term']",
+                                    "termDefinition": "@triggerBody()?['definition']"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['sql']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[terms]'))}/items"
+                            }
+                        },
+                        "Response": {
+                            "runAfter": {
+                                "Insert_row_(V2)": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Response",
+                            "kind": "Http",
+                            "inputs": {
+                                "body": "@body('Insert_row_(V2)')",
+                                "statusCode": 201
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "sql": {
+                                "connectionId": "[parameters('connections_sql_externalid')]",
+                                "connectionName": "sql",
+                                "id": "/subscriptions/${subscription_id}/providers/Microsoft.Web/locations/eastus/managedApis/sql"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
