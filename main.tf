@@ -118,6 +118,36 @@ resource "azurerm_api_management_api" "api" {
 
 }
 
+resource "azurerm_api_management_api_operation" "create" {
+  operation_id        = "terms-create"
+  api_name            = azurerm_api_management_api.api.name
+  api_management_name = azurerm_api_management_api.api.api_management_name
+  resource_group_name = azurerm_api_management_api.api.resource_group_name
+  display_name        = "Create a term"
+  method              = "POST"
+  url_template        = "/terms"
+  description         = "create description"
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "list" {
+  operation_id        = "terms-list"
+  api_name            = azurerm_api_management_api.api.name
+  api_management_name = azurerm_api_management_api.api.api_management_name
+  resource_group_name = azurerm_api_management_api.api.resource_group_name
+  display_name        = "list all terms"
+  method              = "GET"
+  url_template        = "/terms"
+  description         = "list description"
+
+  response {
+    status_code = 200
+  }
+}
+
 data "template_file" "create" {
   template = file("${path.module}/la-create-entry.json")
   vars = {
