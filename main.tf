@@ -118,6 +118,25 @@ resource "azurerm_api_management_api" "api" {
 
 }
 
+resource "azurerm_api_management_api_schema" "term" {
+  api_name            = azurerm_api_management_api.api.name
+  api_management_name = azurerm_api_management_api.api.api_management_name
+  resource_group_name = azurerm_api_management_api.api.resource_group_name
+  schema_id           = "term"
+  content_type        = "application/json"
+  value               = "{ \"type\": \"object\", \"properties\": { \"term\": { \"type\": \"string\" }, \"definition\": { \"type\": \"string\" } } }"
+}
+
+resource "azurerm_api_management_api_schema" "terms" {
+  api_name            = azurerm_api_management_api.api.name
+  api_management_name = azurerm_api_management_api.api.api_management_name
+  resource_group_name = azurerm_api_management_api.api.resource_group_name
+  schema_id           = "terms"
+  content_type        = "application/json"
+  value               = "{ \"type\": \"array\", \"items\":{ \"type\": \"object\", \"properties\": { \"term\": { \"type\": \"string\" }, \"definition\": { \"type\": \"string\" } } } }"
+}
+
+
 resource "azurerm_api_management_api_operation" "create" {
   operation_id        = "terms-create"
   api_name            = azurerm_api_management_api.api.name
@@ -128,8 +147,16 @@ resource "azurerm_api_management_api_operation" "create" {
   url_template        = "/terms"
   description         = "create description"
 
+  request {
+    representation {
+      content_type = "application/json"
+    }
+  }
   response {
     status_code = 200
+    representation {
+      content_type = "application/json"
+    }
   }
 }
 
@@ -142,9 +169,17 @@ resource "azurerm_api_management_api_operation" "list" {
   method              = "GET"
   url_template        = "/terms"
   description         = "list description"
-
+  
+  request {
+    representation {
+      content_type = "application/json"
+    }
+  }
   response {
     status_code = 200
+    representation {
+      content_type = "application/json"
+    }
   }
 }
 
