@@ -131,3 +131,17 @@ resource "azurerm_resource_group_template_deployment" "create" {
   deployment_mode = "Incremental"
   template_content = data.template_file.create.rendered
 }
+
+data "template_file" "list" {
+  template = file("${path.module}/la-list-entries.json")
+  vars = {
+    subscription_id = data.azurerm_client_config.current.subscription_id
+  }
+}
+
+resource "azurerm_resource_group_template_deployment" "list" {
+  name = "la-apim-demo-list"
+  resource_group_name = azurerm_resource_group.rg.name
+  deployment_mode = "Incremental"
+  template_content = data.template_file.list.rendered
+}
