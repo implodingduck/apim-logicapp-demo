@@ -117,3 +117,17 @@ resource "azurerm_api_management_api" "api" {
   protocols           = ["https"]
 
 }
+
+data "template_file" "create" {
+  template = file("${path.module}/la-create-entry.json")
+  vars {
+    subscription_id = data.azurerm_client_config.subscription_id
+  }
+}
+
+resource "azurerm_resource_group_template_deployment" "create" {
+  name = "la-apim-demo-create"
+  resource_group_name = azurerm_resource_group.rg.name
+  deployment_mode = "Incremental"
+  template_content = data.template_file.create.rendered
+}
