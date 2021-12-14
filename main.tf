@@ -120,7 +120,7 @@ resource "azurerm_api_management_api" "api" {
 
 data "template_file" "create" {
   template = file("${path.module}/la-create-entry.json")
-  vars {
+  vars = {
     subscription_id = data.azurerm_client_config.subscription_id
   }
 }
