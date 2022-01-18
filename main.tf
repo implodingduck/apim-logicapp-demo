@@ -79,7 +79,7 @@ resource "azurerm_subnet" "logicapps" {
 }
 
 resource "azurerm_subnet" "apim" {
-  name                  = "snet-logicapps-${local.loc_for_naming}"
+  name                  = "snet-apim-${local.loc_for_naming}"
   resource_group_name   = azurerm_virtual_network.default.resource_group_name
   virtual_network_name  = azurerm_virtual_network.default.name
   address_prefixes      = ["10.5.0.128/26"]
