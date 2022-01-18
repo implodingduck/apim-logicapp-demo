@@ -78,6 +78,22 @@ resource "azurerm_subnet" "logicapps" {
  
 }
 
+resource "azurerm_subnet" "apim" {
+  name                  = "snet-logicapps-${local.loc_for_naming}"
+  resource_group_name   = azurerm_virtual_network.default.resource_group_name
+  virtual_network_name  = azurerm_virtual_network.default.name
+  address_prefixes      = ["10.5.0.128/26"]
+  delegation {
+    name = "apimanagement-delegation"
+    service_delegation {
+      name = "Microsoft.ApiManagement/service"
+    }
+  }
+  
+
+ 
+}
+
 resource "azurerm_key_vault" "kv" {
   name                       = "apim-logicapp-kv"
   location                   = azurerm_resource_group.rg.location
@@ -146,7 +162,7 @@ resource "azurerm_api_management" "apim" {
   publisher_email      = "something@nothing.com"
   virtual_network_type = "Internal"
   virtual_network_configuration {
-    subnet_id = azurerm_subnet.logicapps.id
+    subnet_id = azurerm_subnet.apim.id
   }
 
   sku_name = "Developer_1"
