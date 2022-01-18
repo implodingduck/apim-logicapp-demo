@@ -103,33 +103,6 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days = 7
   purge_protection_enabled = false
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    key_permissions = [
-      "create",
-      "get",
-      "purge",
-      "recover",
-      "delete"
-    ]
-
-    secret_permissions = [
-      "set",
-      "purge",
-      "get",
-      "list"
-    ]
-
-    certificate_permissions = [
-      "purge"
-    ]
-
-    storage_permissions = [
-      "purge"
-    ]
-  }
   tags         = local.tags
 }
 
@@ -338,4 +311,53 @@ resource "azurerm_logic_app_standard" "example" {
 resource "azurerm_app_service_virtual_network_swift_connection" "example" {
   app_service_id = azurerm_logic_app_standard.example.id
   subnet_id      = azurerm_subnet.logicapps.id
+}
+
+resource "azurerm_key_vault_access_policy" "client-config" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = data.azurerm_client_config.current.object_id
+
+  key_permissions = [
+    "create",
+    "get",
+    "purge",
+    "recover",
+    "delete"
+  ]
+
+  secret_permissions = [
+    "set",
+    "purge",
+    "get",
+    "list",
+    "delete"
+  ]
+
+  certificate_permissions = [
+    "purge"
+  ]
+
+  storage_permissions = [
+    "purge"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "la" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_logic_app_standard.example.identity.0.principal_id
+  secret_permissions = [
+    "get",
+    "list"
+  ]
+}
+
+resource "azurerm_key_vault_secret" "dbconnectionstring" {
+  depends_on = [
+    azurerm_key_vault_access_policy.client-config
+  ]
+  name         = "dbconnectionstring"
+  value        = "Server=tcp:${module.sql.db_fully_qualified_domain_name},1433;Initial Catalog=${module.sql.db_name};Persist Security Info=False;User ID=sqladmin;Password=${random_password.password.result};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  key_vault_id = azurerm_key_vault.kv.id
 }
