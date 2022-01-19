@@ -422,13 +422,6 @@ resource "azurerm_key_vault_secret" "dbconnectionstring" {
   key_vault_id = azurerm_key_vault.kv.id
 }
 
-resource "azurerm_mssql_firewall_rule" "azureservices" {
-  name             = "azureservices"
-  server_id        = module.sql.db_server_id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0"
-}
-
 resource "azurerm_mssql_firewall_rule" "logicapp" {
   name             = "logicapp"
   server_id        = module.sql.db_server_id
