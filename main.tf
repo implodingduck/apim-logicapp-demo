@@ -421,3 +421,17 @@ resource "azurerm_key_vault_secret" "dbconnectionstring" {
   value        = "Server=tcp:${module.sql.db_fully_qualified_domain_name},1433;Initial Catalog=${module.sql.db_name};Persist Security Info=False;User ID=sqladmin;Password=${random_password.password.result};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   key_vault_id = azurerm_key_vault.kv.id
 }
+
+resource "azurerm_mssql_firewall_rule" "azureservices" {
+  name             = "azureservices"
+  server_id        = module.sql.db_server_id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
+}
+
+resource "azurerm_mssql_firewall_rule" "logicapp" {
+  name             = "logicapp"
+  server_id        = module.sql.db_server_id
+  start_ip_address = "10.5.0.64"
+  end_ip_address   = "10.5.0.127"
+}
