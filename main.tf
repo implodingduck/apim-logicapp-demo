@@ -428,3 +428,9 @@ resource "azurerm_mssql_firewall_rule" "logicapp" {
   start_ip_address = "10.5.0.64"
   end_ip_address   = "10.5.0.127"
 }
+
+resource "azurerm_role_assignment" "sa" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_logic_app_standard.example.identity_principal_id
+}
