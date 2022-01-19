@@ -32,6 +32,12 @@ locals {
 
 data "azurerm_client_config" "current" {}
 
+data "azurerm_network_security_group" "basic" {
+    name                = "basic"
+    resource_group_name = "rg-network-eastus"
+}
+
+
 resource "azurerm_resource_group" "rg" {
   name     = "rg-apim-logicapp-demo-tf"
   location = var.location
@@ -62,6 +68,11 @@ resource "azurerm_subnet" "pe" {
 
 }
 
+resource "azurerm_subnet_network_security_group_association" "pe" {
+  subnet_id                 = azurerm_subnet.pe.id
+  network_security_group_id = data.azurerm_network_security_group.basic.id
+}
+
 resource "azurerm_subnet" "logicapps" {
   name                  = "snet-logicapps-${local.loc_for_naming}"
   resource_group_name   = azurerm_virtual_network.default.resource_group_name
@@ -77,9 +88,11 @@ resource "azurerm_subnet" "logicapps" {
       name = "Microsoft.Web/serverFarms"
     }
   }
-  
+}
 
- 
+resource "azurerm_subnet_network_security_group_association" "logicapps" {
+  subnet_id                 = azurerm_subnet.logicapps.id
+  network_security_group_id = data.azurerm_network_security_group.basic.id
 }
 
 resource "azurerm_subnet" "apim" {
@@ -92,10 +105,12 @@ resource "azurerm_subnet" "apim" {
     service_delegation {
       name = "Microsoft.ApiManagement/service"
     }
-  }
-  
+  } 
+}
 
- 
+resource "azurerm_subnet_network_security_group_association" "apim" {
+  subnet_id                 = azurerm_subnet.apim.id
+  network_security_group_id = data.azurerm_network_security_group.basic.id
 }
 
 resource "azurerm_key_vault" "kv" {
@@ -242,6 +257,25 @@ resource "azurerm_private_dns_zone" "blob" {
   resource_group_name       = azurerm_resource_group.rg.name
 }
 
+resource "azurerm_private_dns_zone_virtual_network_link" "blob" {
+  name                  = "blob"
+  resource_group_name   = azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.blob.name
+  virtual_network_id    = azurerm_virtual_network.default.id
+}
+
+resource "azurerm_private_dns_zone" "functions" {
+  name                      = "privatelink.azurewebsites.net"
+  resource_group_name       = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "functions" {
+  name                  = "functions"
+  resource_group_name   = azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.functions.name
+  virtual_network_id    = azurerm_virtual_network.default.id
+}
+
 resource "azurerm_private_endpoint" "pe" {
   name                = "pe-sa${local.func_name}"
   location            = azurerm_resource_group.rg.location
@@ -259,6 +293,25 @@ resource "azurerm_private_endpoint" "pe" {
     private_dns_zone_ids = [azurerm_private_dns_zone.blob.id]
   }
 }
+
+resource "azurerm_private_endpoint" "logicapp" {
+  name                = "pe-la${local.func_name}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.pe.id
+
+  private_service_connection {
+    name                           = "pe-connection-la${local.func_name}"
+    private_connection_resource_id = azurerm_logic_app_standard.example.id
+    is_manual_connection           = false
+    subresource_names              = ["sites"]
+  }
+  private_dns_zone_group {
+    name                 = azurerm_private_dns_zone.functions.name
+    private_dns_zone_ids = [azurerm_private_dns_zone.functions.id]
+  }
+}
+
 
 resource "azurerm_storage_account" "sa" {
   name                     = "sa${local.func_name}"
