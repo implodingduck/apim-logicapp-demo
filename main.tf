@@ -375,6 +375,7 @@ resource "azurerm_logic_app_standard" "example" {
     "WEBSITE_NODE_DEFAULT_VERSION"   = "~12"
     "WEBSITE_CONTENTOVERVNET"        = "1"
     "WEBSITE_VNET_ROUTE_ALL"         = "1"
+    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
     "sql_connectionString"           = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.kv.name};SecretName=${azurerm_key_vault_secret.dbconnectionstring.name})"
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.app.instrumentation_key
   }
