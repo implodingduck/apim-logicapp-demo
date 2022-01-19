@@ -67,6 +67,10 @@ resource "azurerm_subnet" "logicapps" {
   resource_group_name   = azurerm_virtual_network.default.resource_group_name
   virtual_network_name  = azurerm_virtual_network.default.name
   address_prefixes      = ["10.5.0.64/26"]
+  service_endpoints = [
+    "Microsoft.Web",
+    "Microsoft.Storage"
+  ]
   delegation {
     name = "serverfarm-delegation"
     service_delegation {
