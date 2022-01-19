@@ -37,6 +37,11 @@ data "azurerm_network_security_group" "basic" {
     resource_group_name = "rg-network-eastus"
 }
 
+data "azurerm_log_analytics_workspace" "default" {
+  name                = "DefaultWorkspace-${data.azurerm_client_config.current.subscription_id}-EUS"
+  resource_group_name = "DefaultResourceGroup-EUS"
+} 
+
 
 resource "azurerm_resource_group" "rg" {
   name     = "rg-apim-logicapp-demo-tf"
@@ -333,6 +338,8 @@ resource "azurerm_storage_account_network_rules" "fw" {
   default_action             = "Deny"
 
   virtual_network_subnet_ids = [azurerm_subnet.logicapps.id]
+
+  ip_rules = split(",", azurerm_logic_app_standard.example.possible_outbound_ip_addresses)
 }
 
 resource "azurerm_app_service_plan" "asp" {
@@ -432,5 +439,5 @@ resource "azurerm_mssql_firewall_rule" "logicapp" {
 resource "azurerm_role_assignment" "sa" {
   scope                = azurerm_storage_account.sa.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_logic_app_standard.example.identity_principal_id
+  principal_id         = azurerm_logic_app_standard.example.identity.0.principal_id
 }
