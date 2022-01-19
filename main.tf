@@ -342,6 +342,14 @@ resource "azurerm_storage_account_network_rules" "fw" {
   ip_rules = split(",", azurerm_logic_app_standard.example.possible_outbound_ip_addresses)
 }
 
+resource "azurerm_application_insights" "app" {
+  name                = "${local.func_name}-insights"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  application_type    = "other"
+  workspace_id = data.azurerm_log_analytics_workspace.default.id
+}
+
 resource "azurerm_app_service_plan" "asp" {
   name                = "asp-${local.func_name}"
   resource_group_name = azurerm_resource_group.rg.name
@@ -363,11 +371,12 @@ resource "azurerm_logic_app_standard" "example" {
   storage_account_name       = azurerm_storage_account.sa.name
   storage_account_access_key = azurerm_storage_account.sa.primary_access_key
   app_settings = {
-    "FUNCTIONS_WORKER_RUNTIME"     = "node"
-    "WEBSITE_NODE_DEFAULT_VERSION" = "~12"
-    "WEBSITE_CONTENTOVERVNET"      = "1"
-    "WEBSITE_VNET_ROUTE_ALL"       = "1"
-    "sql_connectionString"         = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.kv.name};SecretName=${azurerm_key_vault_secret.dbconnectionstring.name})"
+    "FUNCTIONS_WORKER_RUNTIME"       = "node"
+    "WEBSITE_NODE_DEFAULT_VERSION"   = "~12"
+    "WEBSITE_CONTENTOVERVNET"        = "1"
+    "WEBSITE_VNET_ROUTE_ALL"         = "1"
+    "sql_connectionString"           = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.kv.name};SecretName=${azurerm_key_vault_secret.dbconnectionstring.name})"
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.app.instrumentation_key
   }
   identity {
     type = "SystemAssigned"
