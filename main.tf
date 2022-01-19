@@ -299,23 +299,23 @@ resource "azurerm_private_endpoint" "pe" {
   }
 }
 
-resource "azurerm_private_endpoint" "logicapp" {
-  name                = "pe-la${local.func_name}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  subnet_id           = azurerm_subnet.pe.id
+# resource "azurerm_private_endpoint" "logicapp" {
+#   name                = "pe-la${local.func_name}"
+#   location            = azurerm_resource_group.rg.location
+#   resource_group_name = azurerm_resource_group.rg.name
+#   subnet_id           = azurerm_subnet.pe.id
 
-  private_service_connection {
-    name                           = "pe-connection-la${local.func_name}"
-    private_connection_resource_id = azurerm_logic_app_standard.example.id
-    is_manual_connection           = false
-    subresource_names              = ["sites"]
-  }
-  private_dns_zone_group {
-    name                 = azurerm_private_dns_zone.functions.name
-    private_dns_zone_ids = [azurerm_private_dns_zone.functions.id]
-  }
-}
+#   private_service_connection {
+#     name                           = "pe-connection-la${local.func_name}"
+#     private_connection_resource_id = azurerm_logic_app_standard.example.id
+#     is_manual_connection           = false
+#     subresource_names              = ["sites"]
+#   }
+#   private_dns_zone_group {
+#     name                 = azurerm_private_dns_zone.functions.name
+#     private_dns_zone_ids = [azurerm_private_dns_zone.functions.id]
+#   }
+# }
 
 
 resource "azurerm_storage_account" "sa" {
