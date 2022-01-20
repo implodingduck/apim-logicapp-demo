@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=2.92.0"
+      version = "=2.83.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -372,7 +372,7 @@ resource "azurerm_logic_app_standard" "example" {
   storage_account_access_key = azurerm_storage_account.sa.primary_access_key
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME"       = "node"
-    "WEBSITE_NODE_DEFAULT_VERSION"   = "~14"
+    "WEBSITE_NODE_DEFAULT_VERSION"   = "~12"
     "WEBSITE_CONTENTOVERVNET"        = "1"
     "WEBSITE_VNET_ROUTE_ALL"         = "1"
     "sql_connectionString"           = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.kv.name};SecretName=${azurerm_key_vault_secret.dbconnectionstring.name})"
