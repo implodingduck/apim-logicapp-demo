@@ -235,12 +235,12 @@ data "template_file" "create" {
   }
 }
 
-resource "azurerm_resource_group_template_deployment" "create" {
-  name = "la-apim-demo-create"
-  resource_group_name = azurerm_resource_group.rg.name
-  deployment_mode = "Incremental"
-  template_content = data.template_file.create.rendered
-}
+# resource "azurerm_resource_group_template_deployment" "create" {
+#   name = "la-apim-demo-create"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   deployment_mode = "Incremental"
+#   template_content = data.template_file.create.rendered
+# }
 
 data "template_file" "list" {
   template = file("${path.module}/la-list-entries.json")
@@ -249,12 +249,12 @@ data "template_file" "list" {
   }
 }
 
-resource "azurerm_resource_group_template_deployment" "list" {
-  name = "la-apim-demo-list"
-  resource_group_name = azurerm_resource_group.rg.name
-  deployment_mode = "Incremental"
-  template_content = data.template_file.list.rendered
-}
+# resource "azurerm_resource_group_template_deployment" "list" {
+#   name = "la-apim-demo-list"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   deployment_mode = "Incremental"
+#   template_content = data.template_file.list.rendered
+# }
 
 
 resource "azurerm_private_dns_zone" "blob" {
