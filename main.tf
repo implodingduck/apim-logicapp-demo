@@ -155,7 +155,7 @@ module "sql" {
 }
 
 resource "azurerm_api_management" "apim" {
-  name                 = "apim-logicapp-demo-tf-api"
+  name                 = "apim-logicapp-demo-${random_string.unique.result}-api"
   location             = azurerm_resource_group.rg.location
   resource_group_name  = azurerm_resource_group.rg.name
   publisher_name       = "implodingduck"
