@@ -44,7 +44,7 @@ data "azurerm_log_analytics_workspace" "default" {
 
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-apim-logicapp-demo-tf"
+  name     = "rg-apim-logicapp-demo-${random_string.unique.result}"
   location = var.location
 }
 
