@@ -389,21 +389,21 @@ resource "azurerm_logic_app_standard" "example" {
 #   subnet_id      = azurerm_subnet.logicapps.id
 # }
 
-# resource "azurerm_key_vault_access_policy" "la" {
-#   key_vault_id = azurerm_key_vault.kv.id
-#   tenant_id = data.azurerm_client_config.current.tenant_id
-#   object_id = azurerm_logic_app_standard.example.identity.0.principal_id
-#   secret_permissions = [
-#     "get",
-#     "list"
-#   ]
-# }
+resource "azurerm_key_vault_access_policy" "la" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_logic_app_standard.example.identity.0.principal_id
+  secret_permissions = [
+    "get",
+    "list"
+  ]
+}
 
-# resource "azurerm_role_assignment" "sa" {
-#   scope                = azurerm_storage_account.sa.id
-#   role_definition_name = "Storage Blob Data Contributor"
-#   principal_id         = azurerm_logic_app_standard.example.identity.0.principal_id
-# }
+resource "azurerm_role_assignment" "sa" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_logic_app_standard.example.identity.0.principal_id
+}
 resource "azurerm_key_vault_access_policy" "client-config" {
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id = data.azurerm_client_config.current.tenant_id
