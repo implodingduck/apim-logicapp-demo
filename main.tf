@@ -73,10 +73,10 @@ resource "azurerm_subnet" "pe" {
 
 }
 
-resource "azurerm_subnet_network_security_group_association" "pe" {
-  subnet_id                 = azurerm_subnet.pe.id
-  network_security_group_id = data.azurerm_network_security_group.basic.id
-}
+# resource "azurerm_subnet_network_security_group_association" "pe" {
+#   subnet_id                 = azurerm_subnet.pe.id
+#   network_security_group_id = data.azurerm_network_security_group.basic.id
+# }
 
 resource "azurerm_subnet" "logicapps" {
   name                  = "snet-logicapps-${local.loc_for_naming}"
@@ -95,10 +95,10 @@ resource "azurerm_subnet" "logicapps" {
   }
 }
 
-resource "azurerm_subnet_network_security_group_association" "logicapps" {
-  subnet_id                 = azurerm_subnet.logicapps.id
-  network_security_group_id = data.azurerm_network_security_group.basic.id
-}
+# resource "azurerm_subnet_network_security_group_association" "logicapps" {
+#   subnet_id                 = azurerm_subnet.logicapps.id
+#   network_security_group_id = data.azurerm_network_security_group.basic.id
+# }
 
 resource "azurerm_subnet" "apim" {
   name                  = "snet-apim-${local.loc_for_naming}"
@@ -113,10 +113,10 @@ resource "azurerm_subnet" "apim" {
   } 
 }
 
-resource "azurerm_subnet_network_security_group_association" "apim" {
-  subnet_id                 = azurerm_subnet.apim.id
-  network_security_group_id = data.azurerm_network_security_group.basic.id
-}
+# resource "azurerm_subnet_network_security_group_association" "apim" {
+#   subnet_id                 = azurerm_subnet.apim.id
+#   network_security_group_id = data.azurerm_network_security_group.basic.id
+# }
 
 resource "azurerm_key_vault" "kv" {
   name                       = "apim-logicapp-kv"
