@@ -146,13 +146,13 @@ resource "azurerm_key_vault_secret" "dbpassword" {
   tags         = local.tags
 }
 
-module "sql" {
-  source = "github.com/implodingduck/tfmodules//sql"
-  name = local.func_name
-  resource_group_name = azurerm_resource_group.rg.name
-  resource_group_location = azurerm_resource_group.rg.location
-  db_password = random_password.password.result
-}
+# module "sql" {
+#   source = "github.com/implodingduck/tfmodules//sql"
+#   name = local.func_name
+#   resource_group_name = azurerm_resource_group.rg.name
+#   resource_group_location = azurerm_resource_group.rg.location
+#   db_password = random_password.password.result
+# }
 
 resource "azurerm_api_management" "apim" {
   name                 = "apim-logicapp-demo-${random_string.unique.result}-api"
@@ -440,14 +440,14 @@ resource "azurerm_key_vault_secret" "dbconnectionstring" {
     azurerm_key_vault_access_policy.client-config
   ]
   name         = "dbconnectionstring"
-  value        = "Server=tcp:${module.sql.db_fully_qualified_domain_name},1433;Initial Catalog=${module.sql.db_name};Persist Security Info=False;User ID=sqladmin;Password=${random_password.password.result};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  value        = "helloworld" #"Server=tcp:${module.sql.db_fully_qualified_domain_name},1433;Initial Catalog=${module.sql.db_name};Persist Security Info=False;User ID=sqladmin;Password=${random_password.password.result};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   key_vault_id = azurerm_key_vault.kv.id
 }
 
-resource "azurerm_mssql_firewall_rule" "logicapp" {
-  name             = "logicapp"
-  server_id        = module.sql.db_server_id
-  start_ip_address = "10.5.0.64"
-  end_ip_address   = "10.5.0.127"
-}
+# resource "azurerm_mssql_firewall_rule" "logicapp" {
+#   name             = "logicapp"
+#   server_id        = module.sql.db_server_id
+#   start_ip_address = "10.5.0.64"
+#   end_ip_address   = "10.5.0.127"
+# }
 
