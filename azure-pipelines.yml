@@ -54,7 +54,7 @@ stages:
             export ARM_CLIENT_ID=$servicePrincipalId
             export ARM_CLIENT_SECRET=$servicePrincipalKey
             export ARM_TENANT_ID=$tenantId
-            terraform plan -out theplan -refresh=false
+            terraform plan -out theplan
         env:
           TF_VAR_subscription_id: $(subscription-id)
           TF_VAR_storage_account_name: $(storage-account-name)
