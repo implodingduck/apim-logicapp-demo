@@ -351,20 +351,7 @@ resource "azurerm_application_insights" "app" {
 }
 
 resource "azurerm_app_service_plan" "asp" {
-  name                = "asp-${local.func_name}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  kind                = "elastic"
-  reserved            = false
-    sku {
-    tier = "WorkflowStandard"
-    size = "WS1"
-  }
-  tags = local.tags
-}
-
-resource "azurerm_app_service_plan" "aspnew" {
-  name                = "asp-${local.func_name}-new"
+  name                = "asp-${local.func_name}-2"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   kind                = "elastic"
@@ -380,7 +367,7 @@ resource "azurerm_logic_app_standard" "example" {
   name                       = "la-${local.func_name}"
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
-  app_service_plan_id        = azurerm_app_service_plan.aspnew.id
+  app_service_plan_id        = azurerm_app_service_plan.asp.id
   storage_account_name       = azurerm_storage_account.sa.name
   storage_account_access_key = azurerm_storage_account.sa.primary_access_key
   app_settings = {
