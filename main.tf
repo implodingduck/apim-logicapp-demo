@@ -488,3 +488,47 @@ resource "azurerm_mssql_firewall_rule" "logicapp" {
   end_ip_address   = "10.5.0.127"
 }
 
+
+resource "azurerm_app_service_plan" "aspfunc" {
+  name                = "asp-${local.func_name}func"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  kind                = "elastic"
+  reserved = true
+  sku {
+    tier = "ElasticPremium"
+    size = "EP1"
+  }
+}
+
+resource "azurerm_function_app" "func" {
+  name                       = "${local.func_name}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  app_service_plan_id        = azurerm_app_service_plan.asp.id
+  storage_account_name       = azurerm_storage_account.sa.name
+  storage_account_access_key = azurerm_storage_account.sa.primary_access_key
+  version = "~4"
+  os_type = "linux"
+  https_only = true
+  site_config {
+    linux_fx_version = "node|14"
+    use_32_bit_worker_process = false
+    vnet_route_all_enabled    = true
+  }
+  app_settings = {
+      "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.app.instrumentation_key
+      "FUNCTIONS_WORKER_RUNTIME"       = "node"
+      "WEBSITE_NODE_DEFAULT_VERSION"   = "~14"
+      "WEBSITE_CONTENTOVERVNET"        = "1"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_app_service_virtual_network_swift_connection" "example" {
+  app_service_id = azurerm_function_app.func.id
+  subnet_id      = azurerm_subnet.functions.id
+}
