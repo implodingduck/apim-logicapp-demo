@@ -103,7 +103,7 @@ resource "azurerm_subnet" "functions" {
   name                  = "snet-functions-${local.loc_for_naming}"
   resource_group_name   = azurerm_virtual_network.default.resource_group_name
   virtual_network_name  = azurerm_virtual_network.default.name
-  address_prefixes      = ["10.5.0.128/29"]
+  address_prefixes      = ["10.5.0.192/29"]
   service_endpoints = [
     "Microsoft.Web",
     "Microsoft.Storage"
