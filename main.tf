@@ -160,10 +160,10 @@ resource "azurerm_api_management" "apim" {
   resource_group_name  = azurerm_resource_group.rg.name
   publisher_name       = "implodingduck"
   publisher_email      = "something@nothing.com"
-  virtual_network_type = "Internal"
-  virtual_network_configuration {
-    subnet_id = azurerm_subnet.apim.id
-  }
+  # virtual_network_type = "Internal"
+  # virtual_network_configuration {
+  #   subnet_id = azurerm_subnet.apim.id
+  # }
 
   sku_name = "Developer_1"
   tags = local.tags
