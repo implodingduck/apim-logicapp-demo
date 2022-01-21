@@ -88,7 +88,30 @@ resource "azurerm_subnet" "logicapps" {
     "Microsoft.Storage"
   ]
   delegation {
-    name = "serverfarm-delegation"
+    name    = "serverfarm-delegation"
+    actions = [
+      "Microsoft.Network/virtualNetworks/subnets/action",
+    ]
+    service_delegation {
+      name = "Microsoft.Web/serverFarms"
+    }
+  }
+}
+
+resource "azurerm_subnet" "functions" {
+  name                  = "snet-functions-${local.loc_for_naming}"
+  resource_group_name   = azurerm_virtual_network.default.resource_group_name
+  virtual_network_name  = azurerm_virtual_network.default.name
+  address_prefixes      = ["10.5.0.128/29"]
+  service_endpoints = [
+    "Microsoft.Web",
+    "Microsoft.Storage"
+  ]
+  delegation {
+    name    = "serverfarm-delegation"
+    actions = [
+      "Microsoft.Network/virtualNetworks/subnets/action",
+    ]
     service_delegation {
       name = "Microsoft.Web/serverFarms"
     }
@@ -106,7 +129,11 @@ resource "azurerm_subnet" "apim" {
   virtual_network_name  = azurerm_virtual_network.default.name
   address_prefixes      = ["10.5.0.128/26"]
   delegation {
-    name = "apimanagement-delegation"
+    name    = "apimanagement-delegation"
+    actions = [
+      "Microsoft.Network/virtualNetworks/subnets/join/action",
+      "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
+    ]
     service_delegation {
       name = "Microsoft.ApiManagement/service"
     }
@@ -340,7 +367,7 @@ resource "azurerm_storage_account_network_rules" "fw" {
 
   default_action             = "Deny"
 
-  virtual_network_subnet_ids = [azurerm_subnet.logicapps.id]
+  virtual_network_subnet_ids = [azurerm_subnet.logicapps.id, azurerm_subnet.functions.id]
 
   ip_rules = split(",", azurerm_logic_app_standard.example.possible_outbound_ip_addresses)
 }
