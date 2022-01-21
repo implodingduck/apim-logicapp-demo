@@ -561,3 +561,30 @@ resource "azurerm_app_service_virtual_network_swift_connection" "func" {
   app_service_id = azurerm_function_app.func.id
   subnet_id      = azurerm_subnet.functions.id
 }
+
+resource "local_file" "localsettings" {
+    content     = <<-EOT
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": ""
+  }
+}
+EOT
+    filename = "./func1/local.settings.json"
+}
+
+resource "null_resource" "publish_func"{
+  depends_on = [
+    azurerm_function_app.func,
+    local_file.localsettings
+  ]
+  triggers = {
+    index = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    working_dir = "./func1"
+    command     = "func azure functionapp publish ${azurerm_function_app.func.name} --build remote"
+  }
+}
