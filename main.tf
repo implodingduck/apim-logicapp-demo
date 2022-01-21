@@ -330,6 +330,24 @@ resource "azurerm_private_endpoint" "pe" {
   }
 }
 
+resource "azurerm_private_endpoint" "pe2" {
+  name                = "pe-sa${local.func_name}func"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.pe.id
+
+  private_service_connection {
+    name                           = "pe-connection-sa${local.func_name}func"
+    private_connection_resource_id = azurerm_storage_account.safunc.id
+    is_manual_connection           = false
+    subresource_names              = ["blob"]
+  }
+  private_dns_zone_group {
+    name                 = azurerm_private_dns_zone.blob.name
+    private_dns_zone_ids = [azurerm_private_dns_zone.blob.id]
+  }
+}
+
 resource "azurerm_private_endpoint" "logicapp" {
   name                = "pe-la${local.func_name}"
   location            = azurerm_resource_group.rg.location
@@ -359,12 +377,22 @@ resource "azurerm_storage_account" "sa" {
 
   tags = local.tags
 }
+
+resource "azurerm_storage_account" "safunc" {
+  name                     = "sa${local.func_name}fun"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_kind             = "StorageV2"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = local.tags
+}
 ###
 
 resource "azurerm_storage_account_network_rules" "fw" {
   depends_on = [
-    azurerm_app_service_virtual_network_swift_connection.example,
-    azurerm_app_service_virtual_network_swift_connection.func
+    azurerm_app_service_virtual_network_swift_connection.example
   ]
   storage_account_id = azurerm_storage_account.sa.id
 
@@ -507,8 +535,8 @@ resource "azurerm_function_app" "func" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id        = azurerm_app_service_plan.asp.id
-  storage_account_name       = azurerm_storage_account.sa.name
-  storage_account_access_key = azurerm_storage_account.sa.primary_access_key
+  storage_account_name       = azurerm_storage_account.safunc.name
+  storage_account_access_key = azurerm_storage_account.safunc.primary_access_key
   version = "~4"
   os_type = "linux"
   https_only = true
