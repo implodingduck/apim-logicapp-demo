@@ -7,7 +7,7 @@
             "type": "String"
         },
         "connections_sql_externalid": {
-            "defaultValue": "/subscriptions/${subscription_id}/resourceGroups/rg-apim-logicapp-demo-tf/providers/Microsoft.Web/connections/sql",
+            "defaultValue": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Web/connections/sql",
             "type": "String"
         }
     },

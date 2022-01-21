@@ -232,6 +232,7 @@ data "template_file" "create" {
   template = file("${path.module}/la-create-entry.json")
   vars = {
     subscription_id = data.azurerm_client_config.current.subscription_id
+    resource_group_name = azurerm_resource_group.rg.name
   }
 }
 
@@ -246,6 +247,7 @@ data "template_file" "list" {
   template = file("${path.module}/la-list-entries.json")
   vars = {
     subscription_id = data.azurerm_client_config.current.subscription_id
+    resource_group_name = azurerm_resource_group.rg.name
   }
 }
 
