@@ -363,7 +363,8 @@ resource "azurerm_storage_account" "sa" {
 
 resource "azurerm_storage_account_network_rules" "fw" {
   depends_on = [
-    azurerm_app_service_virtual_network_swift_connection.example
+    azurerm_app_service_virtual_network_swift_connection.example,
+    azurerm_app_service_virtual_network_swift_connection.func
   ]
   storage_account_id = azurerm_storage_account.sa.id
 
@@ -528,7 +529,7 @@ resource "azurerm_function_app" "func" {
   }
 }
 
-resource "azurerm_app_service_virtual_network_swift_connection" "example" {
+resource "azurerm_app_service_virtual_network_swift_connection" "func" {
   app_service_id = azurerm_function_app.func.id
   subnet_id      = azurerm_subnet.functions.id
 }
