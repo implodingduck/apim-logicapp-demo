@@ -89,11 +89,12 @@ resource "azurerm_subnet" "logicapps" {
   ]
   delegation {
     name    = "serverfarm-delegation"
-    actions = [
-      "Microsoft.Network/virtualNetworks/subnets/action",
-    ]
+    
     service_delegation {
       name = "Microsoft.Web/serverFarms"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action",
+      ]
     }
   }
 }
@@ -109,11 +110,11 @@ resource "azurerm_subnet" "functions" {
   ]
   delegation {
     name    = "serverfarm-delegation"
-    actions = [
-      "Microsoft.Network/virtualNetworks/subnets/action",
-    ]
     service_delegation {
       name = "Microsoft.Web/serverFarms"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action",
+      ]
     }
   }
 }
@@ -130,12 +131,13 @@ resource "azurerm_subnet" "apim" {
   address_prefixes      = ["10.5.0.128/26"]
   delegation {
     name    = "apimanagement-delegation"
-    actions = [
-      "Microsoft.Network/virtualNetworks/subnets/join/action",
-      "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
-    ]
+    
     service_delegation {
       name = "Microsoft.ApiManagement/service"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+        "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
+      ]
     }
   } 
 }
